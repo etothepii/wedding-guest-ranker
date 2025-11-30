@@ -21,7 +21,7 @@ function App() {
                 <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
               </div>
               <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Wedding Ranker
+                Wedding Guest Ranker
               </span>
             </h1>
             <div className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
