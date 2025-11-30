@@ -75,5 +75,11 @@ export const useGuestList = () => {
         setGuests(newGuests);
     };
 
-    return { guests, addGuest, updateRating, importGuests };
+    const editGuest = (id: string, updates: Partial<Guest>) => {
+        setGuests(prev => prev.map(guest =>
+            guest.id === id ? { ...guest, ...updates } : guest
+        ));
+    };
+
+    return { guests, addGuest, updateRating, importGuests, editGuest };
 };

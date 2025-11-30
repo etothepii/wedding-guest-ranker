@@ -18,4 +18,5 @@ export type GuestStore = {
     addGuest: (guest: Omit<Guest, 'id' | 'ratings' | 'matches'>) => void;
     updateRating: (winnerId: string, loserId: string, isTie: boolean, category: RatingCategory) => void;
     importGuests: (guests: Guest[]) => void;
+    editGuest: (id: string, updates: Partial<Guest>) => void;
 };

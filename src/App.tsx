@@ -5,10 +5,11 @@ import { RankingInterface } from './components/RankingInterface';
 import { Leaderboard } from './components/Leaderboard';
 import { useGuestList } from './hooks/useGuestList';
 import { DataManagement } from './components/DataManagement';
+import { GuestList } from './components/GuestList';
 import clsx from 'clsx';
 
 function App() {
-  const { guests, addGuest, updateRating, importGuests } = useGuestList();
+  const { guests, addGuest, updateRating, importGuests, editGuest } = useGuestList();
   const [activeTab, setActiveTab] = useState<'add' | 'rank' | 'leaderboard'>('add');
 
   return (
@@ -78,56 +79,7 @@ function App() {
             <div className="space-y-8">
               <DataManagement guests={guests} onImport={importGuests} />
               <GuestForm guests={guests} onAddGuest={addGuest} />
-
-              {/* Temporary list to verify addition */}
-              {/* Temporary list to verify addition */}
-              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
-                <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                  Current Guest List
-                  <span className="text-xs font-normal text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                    {guests.length}
-                  </span>
-                </h3>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {guests.map((guest) => (
-                    <div key={guest.id} className="p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-indigo-200 transition-colors group">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-semibold text-slate-900">{guest.name}</span>
-                        <div className="text-[10px] font-medium text-slate-400 bg-white px-2 py-1 rounded-md border border-slate-100 group-hover:border-indigo-100 transition-colors">
-                          ID: {guest.id.slice(0, 4)}
-                        </div>
-                      </div>
-
-                      {guest.plusOne.hasPlusOne && (
-                        <div className="text-sm text-slate-500 flex items-center gap-1.5 mb-3">
-                          <UserPlus className="w-3 h-3" />
-                          {guest.plusOne.isKnown
-                            ? (guest.plusOne.linkedGuestId
-                              ? <span className="text-indigo-600 font-medium">{guests.find(g => g.id === guest.plusOne.linkedGuestId)?.name}</span>
-                              : guest.plusOne.name)
-                            : 'Unknown Guest'}
-                        </div>
-                      )}
-
-                      <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-200/60">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Groom</span>
-                          <span className="text-sm font-mono font-medium text-indigo-600">{guest.ratings.groom}</span>
-                        </div>
-                        <div className="flex flex-col text-right">
-                          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Bride</span>
-                          <span className="text-sm font-mono font-medium text-rose-500">{guest.ratings.bride}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {guests.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-slate-400 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
-                      <p>No guests added yet.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <GuestList guests={guests} onEditGuest={editGuest} />
             </div>
           )}
 
