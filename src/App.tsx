@@ -88,8 +88,8 @@ function App() {
                         )}
                       </div>
                       <div className="text-xs text-gray-400 font-mono flex flex-col items-end gap-1">
-                        <span>Groom Like: {guest.ratings.groom_like}</span>
-                        <span>Bride Like: {guest.ratings.bride_like}</span>
+                        <span>Groom: {guest.ratings.groom}</span>
+                        <span>Bride: {guest.ratings.bride}</span>
                       </div>
                     </div>
                   ))}

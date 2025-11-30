@@ -8,15 +8,13 @@ interface RankingInterfaceProps {
 }
 
 const CATEGORIES: { id: RatingCategory; label: string }[] = [
-    { id: 'groom_like', label: 'Groom Like' },
-    { id: 'groom_obligation', label: 'Groom Obligation' },
-    { id: 'bride_like', label: 'Bride Like' },
-    { id: 'bride_obligation', label: 'Bride Obligation' },
+    { id: 'groom', label: 'Groom' },
+    { id: 'bride', label: 'Bride' },
 ];
 
 export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVote }) => {
     const [pair, setPair] = useState<[Guest, Guest] | null>(null);
-    const [category, setCategory] = useState<RatingCategory>('groom_like');
+    const [category, setCategory] = useState<RatingCategory>('groom');
 
     const pickRandomPair = () => {
         if (guests.length < 2) return;

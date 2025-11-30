@@ -1,4 +1,4 @@
-export type RatingCategory = 'groom_like' | 'groom_obligation' | 'bride_like' | 'bride_obligation';
+export type RatingCategory = 'groom' | 'bride';
 
 export interface Guest {
     id: string;

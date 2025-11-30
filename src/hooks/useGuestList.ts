@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Guest, RatingCategory } from '../types';
 
-const STORAGE_KEY = 'wedding-guest-list-v2'; // Changed key to avoid conflicts with old data structure
+const STORAGE_KEY = 'wedding-guest-list-v3'; // Changed key to avoid conflicts with old data structure
 
 export const useGuestList = () => {
     const [guests, setGuests] = useState<Guest[]>(() => {
@@ -18,16 +18,12 @@ export const useGuestList = () => {
             ...guestData,
             id: crypto.randomUUID(),
             ratings: {
-                groom_like: 1200,
-                groom_obligation: 1200,
-                bride_like: 1200,
-                bride_obligation: 1200,
+                groom: 1200,
+                bride: 1200,
             },
             matches: {
-                groom_like: 0,
-                groom_obligation: 0,
-                bride_like: 0,
-                bride_obligation: 0,
+                groom: 0,
+                bride: 0,
             },
         };
         setGuests((prev) => [...prev, newGuest]);
@@ -53,14 +49,6 @@ export const useGuestList = () => {
 
             const actualWinner = isTie ? 0.5 : 1;
             const actualLoser = isTie ? 0.5 : 0;
-
-            // Create new objects to maintain immutability (though we are mutating the clone above, 
-            // strictly speaking we should be careful, but for this simple app deep cloning might be overkill 
-            // if we are just careful. However, let's be safe with the nested objects).
-            // Actually, since we cloned the array, we can mutate the objects inside if we are sure they are new references 
-            // or if we don't care about shallow comparison of individual items elsewhere. 
-            // But `[...prev]` only shallow copies the array. The items are shared.
-            // So we MUST shallow copy the items we modify.
 
             newGuests[winnerIndex] = {
                 ...winner,

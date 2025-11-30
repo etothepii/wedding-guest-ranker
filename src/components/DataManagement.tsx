@@ -14,8 +14,8 @@ export const DataManagement: React.FC<DataManagementProps> = ({ guests, onImport
         const headers = [
             'id', 'name',
             'plusOne_hasPlusOne', 'plusOne_isKnown', 'plusOne_name', 'plusOne_linkedGuestId',
-            'rating_groom_like', 'rating_groom_obligation', 'rating_bride_like', 'rating_bride_obligation',
-            'matches_groom_like', 'matches_groom_obligation', 'matches_bride_like', 'matches_bride_obligation'
+            'rating_groom', 'rating_bride',
+            'matches_groom', 'matches_bride'
         ];
 
         const csvContent = [
@@ -28,14 +28,10 @@ export const DataManagement: React.FC<DataManagementProps> = ({ guests, onImport
                     guest.plusOne.isKnown,
                     `"${(guest.plusOne.name || '').replace(/"/g, '""')}"`,
                     guest.plusOne.linkedGuestId || '',
-                    guest.ratings.groom_like,
-                    guest.ratings.groom_obligation,
-                    guest.ratings.bride_like,
-                    guest.ratings.bride_obligation,
-                    guest.matches.groom_like,
-                    guest.matches.groom_obligation,
-                    guest.matches.bride_like,
-                    guest.matches.bride_obligation
+                    guest.ratings.groom,
+                    guest.ratings.bride,
+                    guest.matches.groom,
+                    guest.matches.bride
                 ].join(',');
             })
         ].join('\n');
@@ -100,7 +96,7 @@ export const DataManagement: React.FC<DataManagementProps> = ({ guests, onImport
                     // Map values to object based on fixed index (assuming standard export format)
                     // A more robust parser would map based on header index, but this suffices for our own export
 
-                    if (values.length < 14) continue; // Skip malformed lines
+                    if (values.length < 10) continue; // Skip malformed lines
 
                     newGuests.push({
                         id: values[0],
@@ -112,16 +108,12 @@ export const DataManagement: React.FC<DataManagementProps> = ({ guests, onImport
                             linkedGuestId: values[5] || undefined,
                         },
                         ratings: {
-                            groom_like: parseInt(values[6]) || 1200,
-                            groom_obligation: parseInt(values[7]) || 1200,
-                            bride_like: parseInt(values[8]) || 1200,
-                            bride_obligation: parseInt(values[9]) || 1200,
+                            groom: parseInt(values[6]) || 1200,
+                            bride: parseInt(values[7]) || 1200,
                         },
                         matches: {
-                            groom_like: parseInt(values[10]) || 0,
-                            groom_obligation: parseInt(values[11]) || 0,
-                            bride_like: parseInt(values[12]) || 0,
-                            bride_obligation: parseInt(values[13]) || 0,
+                            groom: parseInt(values[8]) || 0,
+                            bride: parseInt(values[9]) || 0,
                         }
                     });
                 }

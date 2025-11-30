@@ -8,14 +8,12 @@ interface LeaderboardProps {
 }
 
 const CATEGORIES: { id: RatingCategory; label: string }[] = [
-    { id: 'groom_like', label: 'Groom Like' },
-    { id: 'groom_obligation', label: 'Groom Obligation' },
-    { id: 'bride_like', label: 'Bride Like' },
-    { id: 'bride_obligation', label: 'Bride Obligation' },
+    { id: 'groom', label: 'Groom' },
+    { id: 'bride', label: 'Bride' },
 ];
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
-    const [category, setCategory] = useState<RatingCategory>('groom_like');
+    const [category, setCategory] = useState<RatingCategory>('groom');
     const sortedGuests = [...guests].sort((a, b) => b.ratings[category] - a.ratings[category]);
 
     if (guests.length === 0) {
