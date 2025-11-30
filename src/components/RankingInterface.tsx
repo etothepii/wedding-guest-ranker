@@ -19,21 +19,49 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
     const pickRandomPair = () => {
         if (guests.length < 2) return;
 
-        let idx1 = Math.floor(Math.random() * guests.length);
-        let idx2 = Math.floor(Math.random() * guests.length);
+        // Sort guests by match count for the current category
+        const sortedGuests = [...guests].sort((a, b) => a.matches[category] - b.matches[category]);
+
+        // Find the minimum number of matches
+        // const minMatches = sortedGuests[0].matches[category];
+
+        // Create a pool of candidates. 
+        // We include guests who have the minimum matches, or slightly more to ensure variety.
+        // If we only picked strict minimums, a new guest might get compared 10 times in a row.
+        // We'll include guests within a small range (e.g., minMatches + 2) but prioritize the top of the list.
+
+        // Strategy: Take the top chunk of guests (e.g., top 5 or 20%, whichever is larger)
+        // This ensures we focus on the under-represented guests while keeping it random.
+        const poolSize = Math.max(5, Math.ceil(guests.length * 0.2));
+        const candidatePool = sortedGuests.slice(0, poolSize);
+
+        // Pick two distinct random guests from the pool
+        let idx1 = Math.floor(Math.random() * candidatePool.length);
+        let idx2 = Math.floor(Math.random() * candidatePool.length);
 
         while (idx1 === idx2) {
-            idx2 = Math.floor(Math.random() * guests.length);
+            idx2 = Math.floor(Math.random() * candidatePool.length);
         }
 
-        setPair([guests[idx1], guests[idx2]]);
+        // If the pool is smaller than 2 (shouldn't happen given the poolSize logic unless guests.length < 2),
+        // fallback to full random is handled by the initial check, but let's be safe.
+        if (candidatePool.length < 2) {
+            // Fallback to simple random if something goes wrong
+            let r1 = Math.floor(Math.random() * guests.length);
+            let r2 = Math.floor(Math.random() * guests.length);
+            while (r1 === r2) r2 = Math.floor(Math.random() * guests.length);
+            setPair([guests[r1], guests[r2]]);
+            return;
+        }
+
+        setPair([candidatePool[idx1], candidatePool[idx2]]);
     };
 
     useEffect(() => {
-        if (!pair && guests.length >= 2) {
+        if (guests.length >= 2) {
             pickRandomPair();
         }
-    }, [guests.length]);
+    }, [guests.length, category]);
 
     const handleVote = (winnerIndex: number | 'tie') => {
         if (!pair) return;
