@@ -136,20 +136,28 @@ export const DataManagement: React.FC<DataManagementProps> = ({ guests, onImport
     };
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-8">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-indigo-600" />
-                Data Management
-            </h3>
-            <div className="flex gap-4">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-8 max-w-2xl mx-auto">
+            <div className="flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <AlertCircle className="w-5 h-5 text-indigo-600" />
+                        Data Management
+                    </h3>
+                    <p className="text-sm text-slate-500 mt-1">
+                        Export your data to backup or edit in a spreadsheet.
+                    </p>
+                </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
                 <button
                     onClick={handleExport}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-100 transition-colors font-semibold border border-indigo-100"
                 >
                     <Download className="w-4 h-4" />
                     Export CSV
                 </button>
-                <div className="relative">
+                <div className="relative flex-1">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -160,15 +168,15 @@ export const DataManagement: React.FC<DataManagementProps> = ({ guests, onImport
                     />
                     <label
                         htmlFor="csv-upload"
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer"
+                        className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all font-semibold cursor-pointer shadow-sm"
                     >
                         <Upload className="w-4 h-4" />
                         Import CSV
                     </label>
                 </div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">
-                Export your data to backup or edit in a spreadsheet. Importing will overwrite current data.
+            <p className="text-xs text-slate-400 mt-4 text-center">
+                Warning: Importing will overwrite your current guest list.
             </p>
         </div>
     );

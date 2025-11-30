@@ -66,15 +66,15 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
     const [left, right] = pair;
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Who is more preferred?</h2>
+        <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Who is more preferred?</h2>
 
                 <div className="inline-block relative">
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value as RatingCategory)}
-                        className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium cursor-pointer"
+                        className="appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-6 pr-12 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-semibold cursor-pointer text-lg"
                     >
                         {CATEGORIES.map((cat) => (
                             <option key={cat.id} value={cat.id}>
@@ -82,42 +82,53 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
                             </option>
                         ))}
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                        <ChevronDown className="w-4 h-4" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                        <ChevronDown className="w-5 h-5" />
                     </div>
                 </div>
 
-                <p className="text-gray-500 mt-4">Click on the guest you prefer for <span className="font-semibold text-gray-700">{CATEGORIES.find(c => c.id === category)?.label}</span></p>
+                <p className="text-slate-500 mt-4 font-medium">
+                    Click on the guest you prefer as <span className="font-bold text-slate-800">{CATEGORIES.find(c => c.id === category)?.label}</span>
+                </p>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8 items-stretch justify-center">
+            <div className="flex flex-col md:flex-row gap-8 items-stretch justify-center relative">
                 {/* Left Option */}
                 <button
                     onClick={() => handleVote(0)}
-                    className="flex-1 bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all group border-2 border-transparent hover:border-indigo-500 text-left"
+                    className="flex-1 bg-white p-10 rounded-3xl shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-indigo-200/50 hover:scale-[1.02] transition-all duration-300 group border-2 border-transparent hover:border-indigo-500 text-left relative overflow-hidden"
                 >
-                    <div className="flex items-start justify-between mb-4">
-                        <div className="p-3 bg-indigo-100 rounded-full group-hover:bg-indigo-600 transition-colors">
-                            <User className="w-8 h-8 text-indigo-600 group-hover:text-white transition-colors" />
-                        </div>
-                        <span className="text-sm font-mono text-gray-400">Rating: {left.ratings[category]}</span>
+                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <User className="w-32 h-32 text-indigo-600" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{left.name}</h3>
-                    {left.plusOne.hasPlusOne && (
-                        <div className="flex items-center gap-2 text-gray-600">
-                            <Users className="w-4 h-4" />
-                            <span>+ {left.plusOne.isKnown
-                                ? (left.plusOne.linkedGuestId
-                                    ? guests.find(g => g.id === left.plusOne.linkedGuestId)?.name
-                                    : left.plusOne.name)
-                                : 'Unknown Guest'}</span>
+
+                    <div className="relative z-10">
+                        <div className="flex items-start justify-between mb-6">
+                            <div className="p-4 bg-indigo-50 rounded-2xl group-hover:bg-indigo-600 transition-colors duration-300">
+                                <User className="w-8 h-8 text-indigo-600 group-hover:text-white transition-colors duration-300" />
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Rating</span>
+                                <span className="text-xl font-mono font-bold text-indigo-600">{left.ratings[category]}</span>
+                            </div>
                         </div>
-                    )}
+                        <h3 className="text-3xl font-bold text-slate-900 mb-3 tracking-tight">{left.name}</h3>
+                        {left.plusOne.hasPlusOne && (
+                            <div className="flex items-center gap-2 text-slate-500 bg-slate-50 inline-flex px-3 py-1.5 rounded-lg border border-slate-100">
+                                <Users className="w-4 h-4" />
+                                <span className="font-medium text-sm">+ {left.plusOne.isKnown
+                                    ? (left.plusOne.linkedGuestId
+                                        ? guests.find(g => g.id === left.plusOne.linkedGuestId)?.name
+                                        : left.plusOne.name)
+                                    : 'Unknown Guest'}</span>
+                            </div>
+                        )}
+                    </div>
                 </button>
 
                 {/* VS Badge */}
-                <div className="flex items-center justify-center md:w-16">
-                    <div className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-lg shadow-lg z-10">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden md:flex">
+                    <div className="w-16 h-16 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xl shadow-xl border-4 border-slate-50">
                         VS
                     </div>
                 </div>
@@ -125,40 +136,49 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
                 {/* Right Option */}
                 <button
                     onClick={() => handleVote(1)}
-                    className="flex-1 bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all group border-2 border-transparent hover:border-rose-500 text-left"
+                    className="flex-1 bg-white p-10 rounded-3xl shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-rose-200/50 hover:scale-[1.02] transition-all duration-300 group border-2 border-transparent hover:border-rose-500 text-left relative overflow-hidden"
                 >
-                    <div className="flex items-start justify-between mb-4">
-                        <div className="p-3 bg-rose-100 rounded-full group-hover:bg-rose-600 transition-colors">
-                            <User className="w-8 h-8 text-rose-600 group-hover:text-white transition-colors" />
-                        </div>
-                        <span className="text-sm font-mono text-gray-400">Rating: {right.ratings[category]}</span>
+                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <User className="w-32 h-32 text-rose-600" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{right.name}</h3>
-                    {right.plusOne.hasPlusOne && (
-                        <div className="flex items-center gap-2 text-gray-600">
-                            <Users className="w-4 h-4" />
-                            <span>+ {right.plusOne.isKnown
-                                ? (right.plusOne.linkedGuestId
-                                    ? guests.find(g => g.id === right.plusOne.linkedGuestId)?.name
-                                    : right.plusOne.name)
-                                : 'Unknown Guest'}</span>
+
+                    <div className="relative z-10">
+                        <div className="flex items-start justify-between mb-6">
+                            <div className="p-4 bg-rose-50 rounded-2xl group-hover:bg-rose-600 transition-colors duration-300">
+                                <User className="w-8 h-8 text-rose-600 group-hover:text-white transition-colors duration-300" />
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Rating</span>
+                                <span className="text-xl font-mono font-bold text-rose-600">{right.ratings[category]}</span>
+                            </div>
                         </div>
-                    )}
+                        <h3 className="text-3xl font-bold text-slate-900 mb-3 tracking-tight">{right.name}</h3>
+                        {right.plusOne.hasPlusOne && (
+                            <div className="flex items-center gap-2 text-slate-500 bg-slate-50 inline-flex px-3 py-1.5 rounded-lg border border-slate-100">
+                                <Users className="w-4 h-4" />
+                                <span className="font-medium text-sm">+ {right.plusOne.isKnown
+                                    ? (right.plusOne.linkedGuestId
+                                        ? guests.find(g => g.id === right.plusOne.linkedGuestId)?.name
+                                        : right.plusOne.name)
+                                    : 'Unknown Guest'}</span>
+                            </div>
+                        )}
+                    </div>
                 </button>
             </div>
 
-            <div className="mt-12 flex justify-center gap-4">
+            <div className="mt-16 flex justify-center gap-6">
                 <button
                     onClick={() => handleVote('tie')}
-                    className="px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors flex items-center gap-2"
+                    className="px-10 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors flex items-center gap-2"
                 >
                     It's a Tie
                 </button>
                 <button
                     onClick={pickRandomPair}
-                    className="px-8 py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium rounded-lg transition-colors flex items-center gap-2"
+                    className="px-10 py-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition-colors flex items-center gap-2 shadow-sm"
                 >
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-5 h-5" />
                     Skip Pair
                 </button>
             </div>
