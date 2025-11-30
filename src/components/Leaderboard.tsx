@@ -59,7 +59,11 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
                                 )}
                             </div>
                             {guest.plusOne.hasPlusOne && guest.plusOne.isKnown && (
-                                <p className="text-sm text-gray-500">w/ {guest.plusOne.name}</p>
+                                <p className="text-sm text-gray-500">
+                                    w/ {guest.plusOne.linkedGuestId
+                                        ? guests.find(g => g.id === guest.plusOne.linkedGuestId)?.name
+                                        : guest.plusOne.name}
+                                </p>
                             )}
                         </div>
 

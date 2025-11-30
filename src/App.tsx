@@ -65,7 +65,7 @@ function App() {
         <div className="transition-all duration-300">
           {activeTab === 'add' && (
             <div className="space-y-8">
-              <GuestForm onAddGuest={addGuest} />
+              <GuestForm guests={guests} onAddGuest={addGuest} />
 
               {/* Temporary list to verify addition */}
               <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -77,7 +77,11 @@ function App() {
                         <span className="font-medium text-gray-900">{guest.name}</span>
                         {guest.plusOne.hasPlusOne && (
                           <span className="text-sm text-gray-500 ml-2">
-                            + {guest.plusOne.isKnown ? guest.plusOne.name : 'Unknown Guest'}
+                            + {guest.plusOne.isKnown
+                              ? (guest.plusOne.linkedGuestId
+                                ? guests.find(g => g.id === guest.plusOne.linkedGuestId)?.name
+                                : guest.plusOne.name)
+                              : 'Unknown Guest'}
                           </span>
                         )}
                       </div>

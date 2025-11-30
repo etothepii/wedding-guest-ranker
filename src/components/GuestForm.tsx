@@ -3,14 +3,16 @@ import { Plus, User } from 'lucide-react';
 import type { Guest } from '../types';
 
 interface GuestFormProps {
+    guests: Guest[];
     onAddGuest: (guest: Omit<Guest, 'id' | 'rating' | 'matches'>) => void;
 }
 
-export const GuestForm: React.FC<GuestFormProps> = ({ onAddGuest }) => {
+export const GuestForm: React.FC<GuestFormProps> = ({ guests, onAddGuest }) => {
     const [name, setName] = useState('');
     const [hasPlusOne, setHasPlusOne] = useState(false);
     const [isKnown, setIsKnown] = useState(false);
     const [plusOneName, setPlusOneName] = useState('');
+    const [linkedGuestId, setLinkedGuestId] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,7 +23,8 @@ export const GuestForm: React.FC<GuestFormProps> = ({ onAddGuest }) => {
             plusOne: {
                 hasPlusOne,
                 isKnown: hasPlusOne ? isKnown : false,
-                name: hasPlusOne && isKnown ? plusOneName.trim() : undefined,
+                name: hasPlusOne && isKnown && !linkedGuestId ? plusOneName.trim() : undefined,
+                linkedGuestId: hasPlusOne && isKnown && linkedGuestId ? linkedGuestId : undefined,
             },
         });
 
@@ -29,7 +32,10 @@ export const GuestForm: React.FC<GuestFormProps> = ({ onAddGuest }) => {
         setHasPlusOne(false);
         setIsKnown(false);
         setPlusOneName('');
+        setLinkedGuestId('');
     };
+
+    const availableGuests = guests.filter(g => g.name !== name);
 
     return (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-lg max-w-md mx-auto space-y-6">
@@ -88,16 +94,39 @@ export const GuestForm: React.FC<GuestFormProps> = ({ onAddGuest }) => {
                         </div>
 
                         {isKnown && (
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Plus One Name</label>
-                                <input
-                                    type="text"
-                                    value={plusOneName}
-                                    onChange={(e) => setPlusOneName(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                                    placeholder="Enter partner's name"
-                                    required={isKnown}
-                                />
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-700">Select Existing Guest</label>
+                                    <select
+                                        value={linkedGuestId}
+                                        onChange={(e) => {
+                                            setLinkedGuestId(e.target.value);
+                                            if (e.target.value) setPlusOneName('');
+                                        }}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                    >
+                                        <option value="">-- Select a guest (optional) --</option>
+                                        {availableGuests.map(guest => (
+                                            <option key={guest.id} value={guest.id}>
+                                                {guest.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {!linkedGuestId && (
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">Or Enter Name</label>
+                                        <input
+                                            type="text"
+                                            value={plusOneName}
+                                            onChange={(e) => setPlusOneName(e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                            placeholder="Enter partner's name"
+                                            required={!linkedGuestId}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

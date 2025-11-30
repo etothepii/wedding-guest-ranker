@@ -84,7 +84,11 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
                     {left.plusOne.hasPlusOne && (
                         <div className="flex items-center gap-2 text-gray-600">
                             <Users className="w-4 h-4" />
-                            <span>+ {left.plusOne.isKnown ? left.plusOne.name : 'Unknown Guest'}</span>
+                            <span>+ {left.plusOne.isKnown
+                                ? (left.plusOne.linkedGuestId
+                                    ? guests.find(g => g.id === left.plusOne.linkedGuestId)?.name
+                                    : left.plusOne.name)
+                                : 'Unknown Guest'}</span>
                         </div>
                     )}
                 </button>
@@ -111,7 +115,11 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
                     {right.plusOne.hasPlusOne && (
                         <div className="flex items-center gap-2 text-gray-600">
                             <Users className="w-4 h-4" />
-                            <span>+ {right.plusOne.isKnown ? right.plusOne.name : 'Unknown Guest'}</span>
+                            <span>+ {right.plusOne.isKnown
+                                ? (right.plusOne.linkedGuestId
+                                    ? guests.find(g => g.id === right.plusOne.linkedGuestId)?.name
+                                    : right.plusOne.name)
+                                : 'Unknown Guest'}</span>
                         </div>
                     )}
                 </button>

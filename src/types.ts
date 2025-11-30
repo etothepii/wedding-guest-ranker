@@ -5,6 +5,7 @@ export interface Guest {
         hasPlusOne: boolean;
         isKnown: boolean;
         name?: string;
+        linkedGuestId?: string;
     };
     rating: number;
     matches: number;
