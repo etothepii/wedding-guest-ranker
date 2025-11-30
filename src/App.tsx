@@ -4,10 +4,11 @@ import { GuestForm } from './components/GuestForm';
 import { RankingInterface } from './components/RankingInterface';
 import { Leaderboard } from './components/Leaderboard';
 import { useGuestList } from './hooks/useGuestList';
+import { DataManagement } from './components/DataManagement';
 import clsx from 'clsx';
 
 function App() {
-  const { guests, addGuest, updateRating } = useGuestList();
+  const { guests, addGuest, updateRating, importGuests } = useGuestList();
   const [activeTab, setActiveTab] = useState<'add' | 'rank' | 'leaderboard'>('add');
 
   return (
@@ -65,6 +66,7 @@ function App() {
         <div className="transition-all duration-300">
           {activeTab === 'add' && (
             <div className="space-y-8">
+              <DataManagement guests={guests} onImport={importGuests} />
               <GuestForm guests={guests} onAddGuest={addGuest} />
 
               {/* Temporary list to verify addition */}
@@ -85,7 +87,10 @@ function App() {
                           </span>
                         )}
                       </div>
-                      <span className="text-sm font-mono text-gray-400">Rating: {guest.rating}</span>
+                      <div className="text-xs text-gray-400 font-mono flex flex-col items-end gap-1">
+                        <span>Groom Like: {guest.ratings.groom_like}</span>
+                        <span>Bride Like: {guest.ratings.bride_like}</span>
+                      </div>
                     </div>
                   ))}
                   {guests.length === 0 && (

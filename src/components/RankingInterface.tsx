@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import type { Guest } from '../types';
-import { User, Users, RefreshCw } from 'lucide-react';
+import type { Guest, RatingCategory } from '../types';
+import { User, Users, RefreshCw, ChevronDown } from 'lucide-react';
 
 interface RankingInterfaceProps {
     guests: Guest[];
-    onVote: (winnerId: string, loserId: string, isTie: boolean) => void;
+    onVote: (winnerId: string, loserId: string, isTie: boolean, category: RatingCategory) => void;
 }
+
+const CATEGORIES: { id: RatingCategory; label: string }[] = [
+    { id: 'groom_like', label: 'Groom Like' },
+    { id: 'groom_obligation', label: 'Groom Obligation' },
+    { id: 'bride_like', label: 'Bride Like' },
+    { id: 'bride_obligation', label: 'Bride Obligation' },
+];
 
 export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVote }) => {
     const [pair, setPair] = useState<[Guest, Guest] | null>(null);
+    const [category, setCategory] = useState<RatingCategory>('groom_like');
 
     const pickRandomPair = () => {
         if (guests.length < 2) return;
 
-        // Simple random selection for now. 
-        // In a real app, we might want to prioritize pairs with fewer matches or similar ratings.
         let idx1 = Math.floor(Math.random() * guests.length);
         let idx2 = Math.floor(Math.random() * guests.length);
 
@@ -37,11 +43,11 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
         const [guest1, guest2] = pair;
 
         if (winnerIndex === 'tie') {
-            onVote(guest1.id, guest2.id, true);
+            onVote(guest1.id, guest2.id, true, category);
         } else if (winnerIndex === 0) {
-            onVote(guest1.id, guest2.id, false);
+            onVote(guest1.id, guest2.id, false, category);
         } else {
-            onVote(guest2.id, guest1.id, false);
+            onVote(guest2.id, guest1.id, false, category);
         }
 
         pickRandomPair();
@@ -64,8 +70,26 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
     return (
         <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-800">Who is more preferred?</h2>
-                <p className="text-gray-500">Click on the guest you prefer, or select Tie.</p>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Who is more preferred?</h2>
+
+                <div className="inline-block relative">
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value as RatingCategory)}
+                        className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium cursor-pointer"
+                    >
+                        {CATEGORIES.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.label}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <ChevronDown className="w-4 h-4" />
+                    </div>
+                </div>
+
+                <p className="text-gray-500 mt-4">Click on the guest you prefer for <span className="font-semibold text-gray-700">{CATEGORIES.find(c => c.id === category)?.label}</span></p>
             </div>
 
             <div className="flex flex-col md:flex-row gap-8 items-stretch justify-center">
@@ -78,7 +102,7 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
                         <div className="p-3 bg-indigo-100 rounded-full group-hover:bg-indigo-600 transition-colors">
                             <User className="w-8 h-8 text-indigo-600 group-hover:text-white transition-colors" />
                         </div>
-                        <span className="text-sm font-mono text-gray-400">Rating: {left.rating}</span>
+                        <span className="text-sm font-mono text-gray-400">Rating: {left.ratings[category]}</span>
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{left.name}</h3>
                     {left.plusOne.hasPlusOne && (
@@ -109,7 +133,7 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
                         <div className="p-3 bg-rose-100 rounded-full group-hover:bg-rose-600 transition-colors">
                             <User className="w-8 h-8 text-rose-600 group-hover:text-white transition-colors" />
                         </div>
-                        <span className="text-sm font-mono text-gray-400">Rating: {right.rating}</span>
+                        <span className="text-sm font-mono text-gray-400">Rating: {right.ratings[category]}</span>
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{right.name}</h3>
                     {right.plusOne.hasPlusOne && (

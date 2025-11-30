@@ -1,3 +1,5 @@
+export type RatingCategory = 'groom_like' | 'groom_obligation' | 'bride_like' | 'bride_obligation';
+
 export interface Guest {
     id: string;
     name: string;
@@ -7,12 +9,13 @@ export interface Guest {
         name?: string;
         linkedGuestId?: string;
     };
-    rating: number;
-    matches: number;
+    ratings: Record<RatingCategory, number>;
+    matches: Record<RatingCategory, number>;
 }
 
 export type GuestStore = {
     guests: Guest[];
-    addGuest: (guest: Omit<Guest, 'id' | 'rating' | 'matches'>) => void;
-    updateRating: (winnerId: string, loserId: string, isTie: boolean) => void;
+    addGuest: (guest: Omit<Guest, 'id' | 'ratings' | 'matches'>) => void;
+    updateRating: (winnerId: string, loserId: string, isTie: boolean, category: RatingCategory) => void;
+    importGuests: (guests: Guest[]) => void;
 };

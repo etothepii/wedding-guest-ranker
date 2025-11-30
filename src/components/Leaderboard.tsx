@@ -1,14 +1,22 @@
-import React from 'react';
-import type { Guest } from '../types';
-import { Trophy, Medal, Users } from 'lucide-react';
+import React, { useState } from 'react';
+import type { Guest, RatingCategory } from '../types';
+import { Trophy, Medal, Users, ChevronDown } from 'lucide-react';
 import clsx from 'clsx';
 
 interface LeaderboardProps {
     guests: Guest[];
 }
 
+const CATEGORIES: { id: RatingCategory; label: string }[] = [
+    { id: 'groom_like', label: 'Groom Like' },
+    { id: 'groom_obligation', label: 'Groom Obligation' },
+    { id: 'bride_like', label: 'Bride Like' },
+    { id: 'bride_obligation', label: 'Bride Obligation' },
+];
+
 export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
-    const sortedGuests = [...guests].sort((a, b) => b.rating - a.rating);
+    const [category, setCategory] = useState<RatingCategory>('groom_like');
+    const sortedGuests = [...guests].sort((a, b) => b.ratings[category] - a.ratings[category]);
 
     if (guests.length === 0) {
         return (
@@ -22,10 +30,29 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
 
     return (
         <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <Trophy className="w-6 h-6 text-amber-500" />
-                Guest Rankings
-            </h2>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <Trophy className="w-6 h-6 text-amber-500" />
+                    Guest Rankings
+                </h2>
+
+                <div className="inline-block relative">
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value as RatingCategory)}
+                        className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium cursor-pointer text-sm"
+                    >
+                        {CATEGORIES.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.label}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <ChevronDown className="w-4 h-4" />
+                    </div>
+                </div>
+            </div>
 
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                 {sortedGuests.map((guest, index) => (
@@ -68,8 +95,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
                         </div>
 
                         <div className="text-right">
-                            <div className="font-mono font-bold text-indigo-600">{guest.rating}</div>
-                            <div className="text-xs text-gray-400">{guest.matches} matches</div>
+                            <div className="font-mono font-bold text-indigo-600">{guest.ratings[category]}</div>
+                            <div className="text-xs text-gray-400">{guest.matches[category]} matches</div>
                         </div>
                     </div>
                 ))}

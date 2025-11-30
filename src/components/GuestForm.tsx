@@ -4,7 +4,7 @@ import type { Guest } from '../types';
 
 interface GuestFormProps {
     guests: Guest[];
-    onAddGuest: (guest: Omit<Guest, 'id' | 'rating' | 'matches'>) => void;
+    onAddGuest: (guest: Omit<Guest, 'id' | 'ratings' | 'matches'>) => void;
 }
 
 export const GuestForm: React.FC<GuestFormProps> = ({ guests, onAddGuest }) => {
@@ -18,13 +18,16 @@ export const GuestForm: React.FC<GuestFormProps> = ({ guests, onAddGuest }) => {
         e.preventDefault();
         if (!name.trim()) return;
 
+        // If known plus one, must have linkedGuestId
+        if (hasPlusOne && isKnown && !linkedGuestId) return;
+
         onAddGuest({
             name: name.trim(),
             plusOne: {
                 hasPlusOne,
                 isKnown: hasPlusOne ? isKnown : false,
-                name: hasPlusOne && isKnown && !linkedGuestId ? plusOneName.trim() : undefined,
-                linkedGuestId: hasPlusOne && isKnown && linkedGuestId ? linkedGuestId : undefined,
+                name: hasPlusOne && !isKnown ? plusOneName.trim() : undefined,
+                linkedGuestId: hasPlusOne && isKnown ? linkedGuestId : undefined,
             },
         });
 
@@ -93,6 +96,19 @@ export const GuestForm: React.FC<GuestFormProps> = ({ guests, onAddGuest }) => {
                             </label>
                         </div>
 
+                        {!isKnown && (
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">Plus One Name (Optional)</label>
+                                <input
+                                    type="text"
+                                    value={plusOneName}
+                                    onChange={(e) => setPlusOneName(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                    placeholder="Enter partner's name if known, or leave blank"
+                                />
+                            </div>
+                        )}
+
                         {isKnown && (
                             <div className="space-y-4">
                                 <div className="space-y-2">
@@ -104,29 +120,21 @@ export const GuestForm: React.FC<GuestFormProps> = ({ guests, onAddGuest }) => {
                                             if (e.target.value) setPlusOneName('');
                                         }}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                        required={isKnown}
                                     >
-                                        <option value="">-- Select a guest (optional) --</option>
+                                        <option value="">-- Select a guest --</option>
                                         {availableGuests.map(guest => (
                                             <option key={guest.id} value={guest.id}>
                                                 {guest.name}
                                             </option>
                                         ))}
                                     </select>
+                                    {availableGuests.length === 0 && (
+                                        <p className="text-sm text-amber-600 mt-1">
+                                            No other guests available to link. Please add them first.
+                                        </p>
+                                    )}
                                 </div>
-
-                                {!linkedGuestId && (
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-medium text-gray-700">Or Enter Name</label>
-                                        <input
-                                            type="text"
-                                            value={plusOneName}
-                                            onChange={(e) => setPlusOneName(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                                            placeholder="Enter partner's name"
-                                            required={!linkedGuestId}
-                                        />
-                                    </div>
-                                )}
                             </div>
                         )}
                     </div>
