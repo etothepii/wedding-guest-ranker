@@ -64,13 +64,13 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
     }, [guests, category]);
 
     useEffect(() => {
-        if (guests.length >= 2) {
+        if (guests.length >= 2 && !pair) {
             const timer = setTimeout(() => {
                 pickRandomPair();
             }, 0);
             return () => clearTimeout(timer);
         }
-    }, [guests.length, pickRandomPair]);
+    }, [guests.length, pickRandomPair, pair]);
 
     const handleVote = (winnerIndex: number | 'tie') => {
         if (!pair) return;
@@ -113,7 +113,10 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
                 <div className="inline-block relative">
                     <select
                         value={category}
-                        onChange={(e) => setCategory(e.target.value as RatingCategory)}
+                        onChange={(e) => {
+                            setCategory(e.target.value as RatingCategory);
+                            setPair(null);
+                        }}
                         className="appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-6 pr-12 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-semibold cursor-pointer text-lg"
                     >
                         {CATEGORIES.map((cat) => (
