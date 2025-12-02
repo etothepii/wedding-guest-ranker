@@ -33,7 +33,12 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
                     <div className="p-2 bg-amber-100 rounded-lg">
                         <Trophy className="w-6 h-6 text-amber-500" />
                     </div>
-                    Guest Rankings
+                    <div>
+                        Guest Rankings
+                        <div className="text-xs font-normal text-slate-400 mt-0.5">
+                            {Math.floor(guests.reduce((acc, g) => acc + (g.matches[category] || 0), 0) / 2)} comparisons
+                        </div>
+                    </div>
                 </h2>
 
                 <div className="inline-block relative">

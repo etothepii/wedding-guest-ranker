@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Guest, RatingCategory } from '../types';
 import { User, Users, RefreshCw, ChevronDown } from 'lucide-react';
 
@@ -16,7 +16,7 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
     const [pair, setPair] = useState<[Guest, Guest] | null>(null);
     const [category, setCategory] = useState<RatingCategory>('groom');
 
-    const pickRandomPair = () => {
+    const pickRandomPair = useCallback(() => {
         if (guests.length < 2) return;
 
         // Sort guests by match count for the current category
@@ -36,7 +36,7 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
         const candidatePool = sortedGuests.slice(0, poolSize);
 
         // Pick two distinct random guests from the pool
-        let idx1 = Math.floor(Math.random() * candidatePool.length);
+        const idx1 = Math.floor(Math.random() * candidatePool.length);
         let idx2 = Math.floor(Math.random() * candidatePool.length);
 
         while (idx1 === idx2) {
@@ -47,21 +47,30 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
         // fallback to full random is handled by the initial check, but let's be safe.
         if (candidatePool.length < 2) {
             // Fallback to simple random if something goes wrong
-            let r1 = Math.floor(Math.random() * guests.length);
+            const r1 = Math.floor(Math.random() * guests.length);
             let r2 = Math.floor(Math.random() * guests.length);
             while (r1 === r2) r2 = Math.floor(Math.random() * guests.length);
-            setPair([guests[r1], guests[r2]]);
+            const pair: [Guest, Guest] = [guests[r1], guests[r2]];
+            pair.sort((a, b) => b.ratings[category] - a.ratings[category]);
+            setPair(pair);
             return;
         }
 
-        setPair([candidatePool[idx1], candidatePool[idx2]]);
-    };
+        const pair: [Guest, Guest] = [candidatePool[idx1], candidatePool[idx2]];
+        // Sort so higher rating is on the left (first element)
+        pair.sort((a, b) => b.ratings[category] - a.ratings[category]);
+
+        setPair(pair);
+    }, [guests, category]);
 
     useEffect(() => {
         if (guests.length >= 2) {
-            pickRandomPair();
+            const timer = setTimeout(() => {
+                pickRandomPair();
+            }, 0);
+            return () => clearTimeout(timer);
         }
-    }, [guests.length, category]);
+    }, [guests.length, pickRandomPair]);
 
     const handleVote = (winnerIndex: number | 'tie') => {
         if (!pair) return;
@@ -96,7 +105,10 @@ export const RankingInterface: React.FC<RankingInterfaceProps> = ({ guests, onVo
     return (
         <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Who is more preferred?</h2>
+                <h2 className="text-3xl font-bold text-slate-800 mb-2 tracking-tight">Who is more preferred?</h2>
+                <p className="text-slate-400 text-sm font-medium mb-6">
+                    {Math.floor(guests.reduce((acc, g) => acc + (g.matches[category] || 0), 0) / 2)} matches so far
+                </p>
 
                 <div className="inline-block relative">
                     <select

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Guest } from '../types';
-import { Edit2, Save, X } from 'lucide-react';
+import { Save, X } from 'lucide-react';
 import clsx from 'clsx';
 
 interface GuestListProps {
@@ -34,7 +34,7 @@ export const GuestList: React.FC<GuestListProps> = ({ guests, onEditGuest }) => 
         }
     };
 
-    const handlePlusOneChange = (field: string, value: any) => {
+    const handlePlusOneChange = (field: string, value: string | boolean) => {
         setEditForm(prev => ({
             ...prev,
             plusOne: {
