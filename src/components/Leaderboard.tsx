@@ -1,22 +1,34 @@
 import React, { useState } from 'react';
-import type { Guest, RatingCategory } from '../types';
-import { Trophy, Medal, Users, ChevronDown } from 'lucide-react';
+import type { Guest } from '../types';
+import { Trophy, Medal, Users } from 'lucide-react';
 import clsx from 'clsx';
 
 interface LeaderboardProps {
     guests: Guest[];
 }
 
-const CATEGORIES: { id: RatingCategory; label: string }[] = [
-    { id: 'groom', label: 'Groom' },
-    { id: 'bride', label: 'Bride' },
-];
+
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
-    const [category, setCategory] = useState<RatingCategory>('groom');
+    const [sliderValue, setSliderValue] = useState<number>(50); // 0 = 100% Groom, 100 = 100% Bride
     const [guestLimit, setGuestLimit] = useState<number | ''>('');
 
-    const sortedGuests = [...guests].sort((a, b) => b.ratings[category] - a.ratings[category]);
+    const handleSliderChange = (newValue: number) => {
+        // Snap to 50% if within +/- 5
+        if (newValue >= 45 && newValue <= 55) {
+            setSliderValue(50);
+        } else {
+            setSliderValue(newValue);
+        }
+    };
+
+    const calculateWeightedScore = (guest: Guest) => {
+        const groomWeight = (100 - sliderValue) / 100;
+        const brideWeight = sliderValue / 100;
+        return (guest.ratings.groom * groomWeight) + (guest.ratings.bride * brideWeight);
+    };
+
+    const sortedGuests = [...guests].sort((a, b) => calculateWeightedScore(b) - calculateWeightedScore(a));
 
     // Calculate highlighted guests
     const highlightedGuestIds = new Set<string>();
@@ -60,46 +72,104 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
 
     return (
         <div className="max-w-3xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
-                <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-                    <div className="p-2 bg-amber-100 rounded-lg">
-                        <Trophy className="w-6 h-6 text-amber-500" />
-                    </div>
-                    <div>
-                        Guest Rankings
-                        <div className="text-xs font-normal text-slate-400 mt-0.5">
-                            {Math.floor(guests.reduce((acc, g) => acc + (g.matches[category] || 0), 0) / 2)} comparisons
+            <div className="flex flex-col gap-6 mb-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                        <div className="p-2 bg-amber-100 rounded-lg">
+                            <Trophy className="w-6 h-6 text-amber-500" />
+                        </div>
+                        <div>
+                            Guest Rankings
+                            <div className="text-xs font-normal text-slate-400 mt-0.5">
+                                {Math.floor(guests.reduce((acc, g) => acc + (g.matches.groom + g.matches.bride), 0) / 2)} total comparisons
+                            </div>
+                        </div>
+                    </h2>
+
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm">
+                            <span className="text-xs font-bold text-slate-500 uppercase">Limit</span>
+                            <input
+                                type="number"
+                                min="1"
+                                placeholder="All"
+                                value={guestLimit}
+                                onChange={(e) => setGuestLimit(e.target.value ? parseInt(e.target.value) : '')}
+                                className="w-12 text-sm font-bold text-slate-800 outline-none bg-transparent text-right"
+                            />
                         </div>
                     </div>
-                </h2>
+                </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm">
-                        <span className="text-xs font-bold text-slate-500 uppercase">Limit</span>
-                        <input
-                            type="number"
-                            min="1"
-                            placeholder="All"
-                            value={guestLimit}
-                            onChange={(e) => setGuestLimit(e.target.value ? parseInt(e.target.value) : '')}
-                            className="w-12 text-sm font-bold text-slate-800 outline-none bg-transparent text-right"
-                        />
-                    </div>
+                {/* Weighted Slider Control */}
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="flex flex-col items-center w-20">
+                            <span className="text-xs font-bold text-slate-400 uppercase mb-1">Groom</span>
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={100 - sliderValue}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value);
+                                        if (!isNaN(val) && val >= 0 && val <= 100) {
+                                            handleSliderChange(100 - val);
+                                        }
+                                    }}
+                                    className="w-16 text-center font-mono font-bold text-indigo-600 bg-indigo-50 rounded-lg py-1 border border-indigo-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                />
+                                <span className="absolute right-2 top-1.5 text-xs text-indigo-300">%</span>
+                            </div>
+                        </div>
 
-                    <div className="inline-block relative">
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value as RatingCategory)}
-                            className="appearance-none bg-white border border-slate-200 text-slate-700 py-2.5 px-5 pr-12 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-semibold cursor-pointer text-sm"
-                        >
-                            {CATEGORIES.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.label}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
-                            <ChevronDown className="w-4 h-4" />
+                        <div className="flex-1 relative h-12 flex items-center">
+                            <div className="absolute left-0 right-0 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-indigo-500 to-rose-500 opacity-50"
+                                    style={{ width: '100%' }}
+                                />
+                            </div>
+                            {/* Snap point marker */}
+                            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-4 bg-slate-300 rounded-full z-0" />
+
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={sliderValue}
+                                onChange={(e) => handleSliderChange(parseInt(e.target.value))}
+                                className="w-full absolute z-10 opacity-0 cursor-pointer h-full"
+                            />
+
+                            {/* Custom Thumb Representation */}
+                            <div
+                                className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-slate-300 rounded-full shadow-md pointer-events-none transition-all duration-75 flex items-center justify-center"
+                                style={{ left: `calc(${sliderValue}% - 12px)` }}
+                            >
+                                <div className="w-2 h-2 rounded-full bg-slate-400" />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-center w-20">
+                            <span className="text-xs font-bold text-slate-400 uppercase mb-1">Bride</span>
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={sliderValue}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value);
+                                        if (!isNaN(val) && val >= 0 && val <= 100) {
+                                            handleSliderChange(val);
+                                        }
+                                    }}
+                                    className="w-16 text-center font-mono font-bold text-rose-600 bg-rose-50 rounded-lg py-1 border border-rose-100 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none"
+                                />
+                                <span className="absolute right-2 top-1.5 text-xs text-rose-300">%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -186,8 +256,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
                                     "font-mono font-bold",
                                     index === 0 ? "text-2xl text-indigo-600" : "text-lg text-slate-700",
                                     isHighlighted && index !== 0 && "text-indigo-600"
-                                )}>{guest.ratings[category]}</div>
-                                <div className="text-xs text-slate-400 font-medium">{guest.matches[category]} matches</div>
+                                )}>{calculateWeightedScore(guest).toFixed(0)}</div>
+                                <div className="text-xs text-slate-400 font-medium">
+                                    {guest.matches.groom + guest.matches.bride} matches
+                                </div>
                             </div>
                         </div>
                     );
