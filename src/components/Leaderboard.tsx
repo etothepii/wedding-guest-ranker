@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Guest } from '../types';
-import { Trophy, Medal, Users } from 'lucide-react';
+import { Trophy, Users } from 'lucide-react';
 import clsx from 'clsx';
 
 interface LeaderboardProps {
@@ -205,21 +205,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ guests }) => {
                             )}
 
                             <div className="w-12 flex-shrink-0 flex justify-center">
-                                {index === 0 ? (
-                                    <div className="relative">
-                                        <div className="absolute inset-0 bg-yellow-400 blur-sm opacity-20 rounded-full"></div>
-                                        <Medal className="w-8 h-8 text-yellow-500 relative z-10" />
-                                    </div>
-                                ) : index === 1 ? (
-                                    <Medal className="w-7 h-7 text-slate-400" />
-                                ) : index === 2 ? (
-                                    <Medal className="w-6 h-6 text-amber-700" />
-                                ) : (
-                                    <span className={clsx(
-                                        "font-mono font-bold text-lg",
-                                        isHighlighted ? "text-indigo-600" : "text-slate-400"
-                                    )}>#{index + 1}</span>
-                                )}
+                                <span className={clsx(
+                                    "font-mono font-bold text-lg",
+                                    isHighlighted ? "text-indigo-600" : "text-slate-400"
+                                )}>#{index + 1}</span>
                             </div>
 
                             <div className="min-w-0">
